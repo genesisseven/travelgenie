@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TravelGenie – AI Travel Planner</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-dark: #0f0f11;
+      --text-main: #f4f4f5;
+      --text-muted: #a1a1aa;
+      --primary: #c084fc;
+      --accent: #8b5cf6;
+    }
+    * {
+      box-sizing: border-box;
+      font-family: 'Inter', sans-serif;
+    }
+    body {
+      margin: 0;
+      background: var(--bg-dark);
+      color: var(--text-main);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      padding: 2rem;
+    }
+    h1 {
+      font-size: 3rem;
+      font-weight: 700;
+      color: var(--primary);
+      margin-bottom: 1rem;
+    }
+    p {
+      color: var(--text-muted);
+      font-size: 1.125rem;
+      max-width: 600px;
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+    textarea {
+      width: 100%;
+      max-width: 600px;
+      height: 120px;
+      padding: 1rem;
+      border-radius: 8px;
+      border: 1px solid var(--text-muted);
+      background: #1a1a1d;
+      color: white;
+      resize: vertical;
+      font-size: 1rem;
+      margin-bottom: 1rem;
+    }
+    button {
+      padding: 0.75rem 2rem;
+      font-size: 1rem;
+      font-weight: 700;
+      background: var(--primary);
+      color: black;
+      border: none;
+      border-radius: 999px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+    button:hover {
+      background: var(--accent);
+    }
+    .response {
+      margin-top: 2rem;
+      background: #1a1a1d;
+      border-radius: 8px;
+      padding: 1rem;
+      max-width: 600px;
+      white-space: pre-wrap;
+      font-size: 0.95rem;
+    }
+  </style>
+</head>
+<body>
+  <h1>TravelGenie</h1>
+  <p>Describe your dream trip and let AI suggest destinations, budgets, and ideas for you.</p>
+  <textarea id="userInput" placeholder="e.g., 10-day romantic getaway, $4000 budget, tropical vibes..."></textarea>
+  <button onclick="generatePlan()">Generate Travel Plan</button>
+  <div id="response" class="response"></div>
+
+  <script>
+    async function generatePlan() {
+      const input = document.getElementById('userInput').value;
+      const responseDiv = document.getElementById('response');
+      responseDiv.textContent = 'Thinking...';
+      try {
+        const res = await fetch('/api/generate-travel-ideas', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ input })
+        });
+        const data = await res.json();
+        responseDiv.textContent = data.suggestions;
+      } catch (err) {
+        responseDiv.textContent = 'Failed to generate travel ideas.';
+      }
+    }
+  </script>
+</body>
+</html>
