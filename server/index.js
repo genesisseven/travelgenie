@@ -4,21 +4,29 @@ const dotenv = require('dotenv');
 const { Configuration, OpenAIApi } = require('openai');
 const path = require('path');
 
+// Load .env variables
 dotenv.config();
 
 const app = express();
 app.use(cors());
 app.use(express.json());
+
+// Serve static files (your public/index.html)
 app.use(express.static(path.join(__dirname, '..', 'public')));
 
+// Set up OpenAI
 const configuration = new Configuration({
   apiKey: process.env.OPENAI_API_KEY,
 });
 const openai = new OpenAIApi(configuration);
 
+// API Route
 app.post('/api/generate-travel-ideas', async (req, res) => {
   const { input } = req.body;
-  if (!input) return res.status(400).json({ error: 'Missing input' });
+
+  if (!input || input.trim() === "") {
+    return res.status(400).json({ error: 'Missing input' });
+  }
 
   try {
     const completion = await openai.createChatCompletion({
@@ -26,7 +34,7 @@ app.post('/api/generate-travel-ideas', async (req, res) => {
       messages: [
         {
           role: 'system',
-          content: 'You are a helpful travel assistant. Suggest ideal travel destinations, itinerary highlights, and an approximate budget based on user preferences.',
+          content: 'You are a helpful travel assistant. Suggest destinations, activities, and a rough budget based on user preferences.',
         },
         {
           role: 'user',
@@ -40,10 +48,13 @@ app.post('/api/generate-travel-ideas', async (req, res) => {
     const suggestions = completion.data.choices[0].message.content;
     res.json({ suggestions });
   } catch (error) {
-    console.error('OpenAI Error:', error.message);
+    console.error('OpenAI API Error:', error.response?.data || error.message);
     res.status(500).json({ error: 'Failed to generate travel ideas' });
   }
 });
 
+// IMPORTANT: Use Render's assigned port
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log(`Server running on http://localhost:${PORT}`));
+app.listen(PORT, () => {
+  console.log(`✅ Server is running on http://localhost:${PORT}`);
+});
