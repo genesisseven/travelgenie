@@ -4,26 +4,20 @@ const dotenv = require('dotenv');
 const { Configuration, OpenAIApi } = require('openai');
 const path = require('path');
 
-// Load .env variables
 dotenv.config();
 
 const app = express();
 app.use(cors());
 app.use(express.json());
-
-// Serve static files (your public/index.html)
 app.use(express.static(path.join(__dirname, '..', 'public')));
 
-// Set up OpenAI
 const configuration = new Configuration({
   apiKey: process.env.OPENAI_API_KEY,
 });
 const openai = new OpenAIApi(configuration);
 
-// API Route
 app.post('/api/generate-travel-ideas', async (req, res) => {
   const { input } = req.body;
-
   if (!input || input.trim() === "") {
     return res.status(400).json({ error: 'Missing input' });
   }
@@ -53,7 +47,6 @@ app.post('/api/generate-travel-ideas', async (req, res) => {
   }
 });
 
-// IMPORTANT: Use Render's assigned port
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`✅ Server is running on http://localhost:${PORT}`);
