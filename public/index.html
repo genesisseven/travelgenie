@@ -91,16 +91,24 @@
       const input = document.getElementById('userInput').value;
       const responseDiv = document.getElementById('response');
       responseDiv.textContent = 'Thinking...';
+
       try {
         const res = await fetch('/api/generate-travel-ideas', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ input })
         });
+
         const data = await res.json();
-        responseDiv.textContent = data.suggestions;
+
+        if (!res.ok) {
+          responseDiv.textContent = `❌ Server Error: ${data.error || 'Something went wrong.'}`;
+          return;
+        }
+
+        responseDiv.textContent = data.suggestions || '❌ No suggestions returned.';
       } catch (err) {
-        responseDiv.textContent = 'Failed to generate travel ideas.';
+        responseDiv.textContent = `❌ Request failed: ${err.message}`;
       }
     }
   </script>

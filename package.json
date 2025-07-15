@@ -2,19 +2,11 @@
   "name": "travelgenie",
   "version": "1.0.0",
   "description": "TravelGenie – AI-powered travel planning site",
+  "type": "module",
   "main": "server/index.js",
   "scripts": {
     "start": "node server/index.js"
   },
-  "keywords": [
-    "travel",
-    "AI",
-    "openai",
-    "express",
-    "render"
-  ],
-  "author": "Your Name",
-  "license": "MIT",
   "dependencies": {
     "cors": "^2.8.5",
     "dotenv": "^16.3.1",
