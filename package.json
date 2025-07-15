@@ -1,7 +1,7 @@
 {
   "name": "travelgenie",
   "version": "1.0.0",
-  "description": "TravelGenie – AI-powered travel planning site",
+  "description": "AI Travel Planner",
   "type": "module",
   "main": "server/index.js",
   "scripts": {
