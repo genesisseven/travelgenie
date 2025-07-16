@@ -17,37 +17,65 @@
       ></textarea>
       <button id="sendBtn">Go</button>
     </div>
-    <div id="responseContainer"></div>
+    <div id="suggestions"></div>
   </div>
 
   <script>
-    // (front-end placeholder only – real key lives in server/.env)
-    const API_KEY = "YOUR_CHATGPT_SECRET_KEY";
     const sendBtn = document.getElementById("sendBtn");
-    const responseContainer = document.getElementById("responseContainer");
+    const suggestions = document.getElementById("suggestions");
 
     sendBtn.addEventListener("click", async () => {
       const prompt = document.getElementById("userInput").value.trim();
       if (!prompt) return;
 
-      // Unhide and clear the response area
-      responseContainer.style.display = "block";
-      responseContainer.innerHTML = "<p>Loading...</p>";
+      suggestions.innerHTML = "<p>Loading…</p>";
 
       try {
-        const res = await fetch("/api/chat", {
+        const apiRes = await fetch("/api/chat", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ prompt }),
+          body: JSON.stringify({
+            prompt
+          })
         });
-        const { reply } = await res.json();
-        responseContainer.innerHTML = `<div class="reply">${reply
-          .replace(/\n/g, "<br>")
-        }</div>`;
+
+        const payload = await apiRes.json();
+        if (!apiRes.ok) {
+          throw new Error(payload.error || "Unknown API error");
+        }
+
+        const ideas = JSON.parse(payload.reply);
+        suggestions.innerHTML = "";
+
+        ideas.forEach((idea) => {
+          const box = document.createElement("div");
+          box.className = "suggestion-box";
+
+          const title = document.createElement("h3");
+          title.textContent = idea.title;
+
+          const summary = document.createElement("p");
+          summary.textContent = idea.summary;
+
+          const details = document.createElement("div");
+          details.className = "details";
+          details.textContent = idea.details;
+          details.style.display = "none";
+
+          const toggle = document.createElement("button");
+          toggle.textContent = "Show more";
+          toggle.addEventListener("click", () => {
+            const isHidden = details.style.display === "none";
+            details.style.display = isHidden ? "block" : "none";
+            toggle.textContent = isHidden ? "Collapse" : "Show more";
+          });
+
+          box.append(title, summary, toggle, details);
+          suggestions.append(box);
+        });
       } catch (err) {
-        responseContainer.innerHTML =
-          "<p>Something went wrong. Please try again.</p>";
-        console.error(err);
+        console.error("Error fetching travel ideas:", err);
+        suggestions.innerHTML = `<p style="color:#f88;">Error: ${err.message}</p>`;
       }
     });
   </script>
