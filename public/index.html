@@ -3,42 +3,53 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>TravelGenie – AI Travel Planner</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css">
+  <title>Travel Genie</title>
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <h1>TravelGenie</h1>
-  <p>Describe your dream trip and let AI suggest destinations, budgets, and ideas for you.</p>
-  <textarea id="userInput" placeholder="e.g., 10-day romantic getaway, $4000 budget, tropical vibes..."></textarea>
-  <button onclick="generatePlan()">Generate Travel Plan</button>
-  <div id="response" class="response"></div>
+  <div class="overlay"></div>
+
+  <div class="chat-container">
+    <div class="chat-bubble">
+      <textarea
+        id="userInput"
+        placeholder="Where would you like to travel?"
+      ></textarea>
+      <button id="sendBtn">Go</button>
+    </div>
+    <div id="responseContainer"></div>
+  </div>
 
   <script>
-    async function generatePlan() {
-      const input = document.getElementById('userInput').value;
-      const responseDiv = document.getElementById('response');
-      responseDiv.textContent = 'Thinking...';
+    // (front-end placeholder only – real key lives in server/.env)
+    const API_KEY = "YOUR_CHATGPT_SECRET_KEY";
+    const sendBtn = document.getElementById("sendBtn");
+    const responseContainer = document.getElementById("responseContainer");
+
+    sendBtn.addEventListener("click", async () => {
+      const prompt = document.getElementById("userInput").value.trim();
+      if (!prompt) return;
+
+      // Unhide and clear the response area
+      responseContainer.style.display = "block";
+      responseContainer.innerHTML = "<p>Loading...</p>";
 
       try {
-        const res = await fetch('/api/generate-travel-ideas', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ input })
+        const res = await fetch("/api/chat", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ prompt }),
         });
-
-        const data = await res.json();
-
-        if (!res.ok) {
-          responseDiv.textContent = `❌ Server Error: ${data.error || 'Something went wrong.'}`;
-          return;
-        }
-
-        responseDiv.textContent = data.suggestions || '❌ No suggestions returned.';
+        const { reply } = await res.json();
+        responseContainer.innerHTML = `<div class="reply">${reply
+          .replace(/\n/g, "<br>")
+        }</div>`;
       } catch (err) {
-        responseDiv.textContent = `❌ Request failed: ${err.message}`;
+        responseContainer.innerHTML =
+          "<p>Something went wrong. Please try again.</p>";
+        console.error(err);
       }
-    }
+    });
   </script>
 </body>
 </html>
