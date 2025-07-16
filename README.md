@@ -1,7 +1,12 @@
 **Folder Structure**:
 
-travel-website/
-├── public/        # Frontend files
-├── server/        # Express server and API proxy (including .env)
-└── README.md      # Project overview
-
+travelgenie-main/  
+├── public/          ← Static frontend  
+│   ├── index.html   ← Chat UI  
+│   ├── style.css    ← Styling  
+│   └── images/      ← Background image  
+├── server/          ← Node.js backend  
+│   ├── server.js    ← Express app and OpenAI proxy  
+│   ├── package.json ─ Dependencies (express, dotenv, node-fetch)  
+│   └── .env         ← Your OPENAI_API_KEY  
+└── README.md        ← This overview  

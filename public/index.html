@@ -34,9 +34,7 @@
         const apiRes = await fetch("/api/chat", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            prompt
-          })
+          body: JSON.stringify({ prompt })
         });
 
         const payload = await apiRes.json();
@@ -59,15 +57,19 @@
 
           const details = document.createElement("div");
           details.className = "details";
-          details.textContent = idea.details;
+          // Inject full AI text, preserving line breaks
+          details.innerHTML = idea.details
+            .split("\n")
+            .map(line => `<p>${line}</p>`)
+            .join("");
           details.style.display = "none";
 
           const toggle = document.createElement("button");
-          toggle.textContent = "Show more";
+          toggle.textContent = "See more";
           toggle.addEventListener("click", () => {
             const isHidden = details.style.display === "none";
             details.style.display = isHidden ? "block" : "none";
-            toggle.textContent = isHidden ? "Collapse" : "Show more";
+            toggle.textContent = isHidden ? "Collapse" : "See more";
           });
 
           box.append(title, summary, toggle, details);
